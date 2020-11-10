@@ -16,16 +16,16 @@ class App(tk.Frame):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-        
+
         self.frames = {}
 
         for F in (MainMenu, PointofSale):
 
             page_name = F.__name__
-            frame = F(self.master, self)
+            frame = F(master=container, controller=self)
             self.frames[page_name] = frame
 
-            #frame.grid(row=0, column=0, sticky="nsew")
+            frame.grid(row=0, column=0, sticky="nsew")
 
         self.ShowFrame("MainMenu")
     
@@ -43,10 +43,9 @@ class MainMenu(tk.Frame):
         self.CreateWidgets()
 
     def CreateWidgets(self):
-        self.PointofSale = tk.Button(self)
-        self.PointofSale["text"] = "Point of Sale"
-        self.PointofSale["command"] = lambda:controller.ShowFrame(self,"PointOfSale")
-        self.PointofSale.pack(side="left")
+        self.Button1 = tk.Button(self, text="Point of Sale", 
+                        command=lambda: self.controller.ShowFrame("PointofSale"))
+        self.Button1.pack(side="left")
         
 
 if __name__ == "__main__":

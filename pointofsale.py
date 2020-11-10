@@ -6,8 +6,8 @@ class PointofSale(tk.Frame):
         super().__init__(master)
         self.master = master
         self.pack()
-        self.CreateWidgets()
 
-    def CreateWidgets(self):
+        print("Benj")
+        
         self.Text = tk.Label(self.master, text="Benj")
         self.Text.pack() 
