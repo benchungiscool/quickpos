@@ -50,9 +50,13 @@ class MainMenu(tk.Frame):
         self.CreateWidgets()
 
     def CreateWidgets(self):
-        self.Button1 = tk.Button(self, text="Point of Sale", 
+        self.Button1 = tk.Button(self, text="Epic functionality", 
                         command=lambda: self.controller.ShowFrame("PointofSale"))
-        self.Button1.grid(row=5, column=5, pady=105, padx=205)
+        self.Button1.grid(row=5, column=5, pady=105, padx=(175, 0))
+
+        self.QuitButton = tk.Button(self, text="Quit",
+                                    command = lambda: app.destroy())
+        self.QuitButton.grid(row=5, column=6)
 
 
 if __name__ == "__main__":
