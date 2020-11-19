@@ -25,7 +25,7 @@ class Database:
             os.chdir("databases")
 
         ## Call the Database Creation
-        self.TableTransaction(createTable)
+        self.TableTransaction(createInstruction)
 
     ## When you want to add something to a database
     def TableTransaction(self, instruction: str) -> None:
@@ -72,8 +72,6 @@ class Database:
             count = records.count(record)
             if count >= 2 and record not in wasterecords:
                 wasterecords.append(record)
-            
-        print("Wasterecords \n", wasterecords)
         
         ## Replace all duplicates with a new record
         for record in wasterecords:
@@ -94,10 +92,9 @@ class Database:
             """.format(self.tableName, record)
 
             self.TableTransaction(insertreplacement)
-            
+     
 
 ## Test
-"""
 dbName = "items"
 tableName = "products"
 start = """
@@ -138,4 +135,4 @@ if __name__ == "__main__":
 
     for record in db.ReturnRecords(returnall):
         print(record)
-""" 
+
