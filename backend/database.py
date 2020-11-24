@@ -4,7 +4,7 @@ import os
 
 
 ## The class to use if you need to interact with databases
-## You need to pass in a filename and the instruction to create
+## Requires a filename, a tablename and an instruction to start
 class Database:
     ## Make sure all of the directories are in and create a table if necessary
     def __init__(self, dbName: str, tablename: str, createInstruction: str) -> None:
@@ -55,7 +55,7 @@ class Database:
         return table.fetchall()
     
     ## Remove the duplicates in the database
-    def RemoveDuplicates(self):
+    def RemoveDuplicates(self) -> None:
 
         ## Get all items from a given table
         returnall = """
@@ -92,6 +92,12 @@ class Database:
             """.format(self.tableName, record)
 
             self.TableTransaction(insertreplacement)
+
+    def Clear(self):
+        instruction = """
+        DROP TABLE *
+        """
+        self.TableTransaction(instruction)
      
 
 ## Test

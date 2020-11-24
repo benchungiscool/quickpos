@@ -46,7 +46,6 @@ class MainMenu(tk.Frame):
         super().__init__(master)
         self.controller = controller
         self.master = master
-
         self.CreateWidgets()
 
     def CreateWidgets(self):
