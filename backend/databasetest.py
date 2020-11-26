@@ -1,46 +1,53 @@
 from database import Database
 
 # Test
-dbName = "items"
-tableName = "products"
-start = """
-CREATE TABLE IF NOT EXISTS {} (
-    [prid] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    [name] TEXT NOT NULL,
-    [price] INTEGER NOT NULL,
-);
-""".format("products")
+class DBTest:
 
-returnall = """
-SELECT * 
-FROM {}
-""".format(tableName)
+    ## Define some key commands
+    self.start = """
+    CREATE TABLE IF NOT EXISTS products (
+        [prid] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        [name] TEXT NOT NULL,
+        [price] INTEGER NOT NULL);
+    """
 
-products = [
-    ("Sausages", 1.50, "Saus1"),
-    ("Wotsits", 0.5, "Wots1"),
-    ("Bananas", 0.25, "Bana1"),
-    ("Playboy Magazine", 5, "Maga1")
-]
+    self.returnall = """
+    SELECT * 
+    FROM {}
+    """.format(tableName)
 
-if __name__ == "__main__":  
-    db = Database(dbName, tableName, start)
-
-    for product in products:
-
-        insertion = """
-        INSERT INTO {}
-        VALUES {}
-        """.format(tableName, product)
-
-        for record in range(20):
-            db.TableTransaction(insertion)
-
-    for record in db.ReturnRecords(returnall):
-        print(record)
+def __init__(self):
+    dbName = "items"
+    tableName = "products"
     
-    print("\n")
-    db.Clear()
 
-    for record in db.ReturnRecords(returnall):
-        print(record)
+    
+
+    products = [
+        ("Sausages", 0.50),
+        ("Wotsits", -1.5),
+        ("Bananas", -1.25),
+        ("Playboy Magazine", 4)
+    ]
+
+    if __name__ == "__main__":  
+        db = Database(dbName, tableName, start)
+
+        for product in products:
+
+            insertion = """
+            INSERT INTO {} {}
+            VALUES {}
+            """.format(tableName, "(name, price)", product)
+
+            for record in range(19):
+                db.TableTransaction(insertion)
+
+        for record in db.ReturnRecords(returnall):
+            print(record)
+        
+        print("\n")
+        db.Clear()
+
+        for record in db.ReturnRecords(returnall):
+            print(record)

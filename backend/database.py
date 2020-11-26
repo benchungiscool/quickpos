@@ -94,10 +94,27 @@ class Database:
             self.TableTransaction(insertreplacement)
 
     def Clear(self):
+        
         instruction = """
-        DROP TABLE *
+        SELECT name from sqlite_master where type="table"
         """
-        self.TableTransaction(instruction)
+
+        ## Get all the tables in string form
+        tables = self.ReturnRecords(instruction)
+        tables = [str(table) for table in tables]
+        
+        ## Remove any remaining speech marks or brackets
+        tables = [table.replace("('", "") for table in tables]
+        tables = [table.replace("',)", "") for table in tables]
+
+        for table in tables:
+            print(table)
+            if not "sqlite_sequence" in table:
+                dropcommand = """
+                DROP TABLE {}
+                """.format(table)
+                
+                db.TableTransaction(dropcommand)
      
 
 ## Test
@@ -113,32 +130,5 @@ SELECT *
 FROM {}
 """.format(tableName)
 
-products = [
-    ("Sausages", 1.50, "Saus1"),
-    ("Wotsits", 0.5, "Wots1"),
-    ("Bananas", 0.25, "Bana1"),
-    ("Playboy Magazine", 5, "Maga1")
-]
-
-if __name__ == "__main__":  
-    db = Database(dbName, tableName, start)
-
-    for product in products:
-
-        insertion = """
-        INSERT INTO {}
-        VALUES {}
-        """.format(tableName, product)
-
-        for record in range(20):
-            db.TableTransaction(insertion)
-
-    for record in db.ReturnRecords(returnall):
-        print(record)
-    
-    print("\n")
-    db.RemoveDuplicates()
-
-    for record in db.ReturnRecords(returnall):
-        print(record)
-
+db = Database(dbName, tableName, start)
+db.Clear()
