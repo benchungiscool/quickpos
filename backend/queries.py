@@ -1,4 +1,5 @@
-import database
+import init
+from backend.database import Database
 
 
 ## Implement the reusability of the more widely used queries in this project

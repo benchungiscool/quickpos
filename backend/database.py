@@ -55,16 +55,18 @@ class Database:
         return table.fetchall()
     
     ## Remove the duplicates in the database
-    def RemoveDuplicates(self) -> None:
+    def RemoveDuplicates(self, columnnames: tuple) -> None:
 
         ## Get all items from a given table
         returnall = """
-        SELECT *
+        SELECT {}
         FROM {}
-        """.format(self.tableName)
+        """.format(columnnames, self.tableName)
 
         ## Get a list of the records
         records = self.ReturnRecords(returnall)
+        for item in records:
+            print(item)
         wasterecords = []
 
         ## Get a list of all the records that appear more than once
@@ -115,20 +117,4 @@ class Database:
                 """.format(table)
                 
                 db.TableTransaction(dropcommand)
-     
 
-## Test
-dbName = "items"
-tableName = "products"
-start = """
-CREATE TABLE IF NOT EXISTS {}
-(name TEXT, price INTEGER, prid TEXT)
-""".format("products")
-
-returnall = """
-SELECT * 
-FROM {}
-""".format(tableName)
-
-db = Database(dbName, tableName, start)
-db.Clear()
