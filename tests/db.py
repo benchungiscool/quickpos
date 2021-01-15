@@ -1,4 +1,3 @@
-import init
 from backend.database import Database
 from backend.queries import Queries
 
