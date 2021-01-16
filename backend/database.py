@@ -1,4 +1,3 @@
-## Luke is a cool guy 
 import sqlite3
 import os
 
@@ -6,115 +5,135 @@ import os
 ## The class to use if you need to interact with databases
 ## Requires a filename, a tablename and an instruction to start
 class Database:
-    ## Make sure all of the directories are in and create a table if necessary
-    def __init__(self, dbName: str, tablename: str, createInstruction: str) -> None:
+  ## Make sure all of the directories are in and create a table if necessary
+  def __init__(self, dbName: str, tablename: str) -> None:
 
-        ## We can use these later
-        self.dbName = dbName
-        self.tableName = tablename
-        
-        ## Check for database file
-        while "main.py" not in os.listdir():
-            os.chdir("..")
+    ## We can use these later
+    self.dbName = dbName
+    self.tableName = tablename
 
-        ## If no database folder found, create one then change dir to it
-        if "databases" not in os.listdir():
-             os.mkdir("databases")
-             os.chdir("databases")
-        else: 
-            os.chdir("databases")
+    createInstruction = [
+    """
+    CREATE TABLE IF NOT EXISTS products(
+      product_id INT PRIMARY KEY,
+      product_name TEXT NOT NULL,
+      added_date date(YYYY-MM-DD HH:MM),
+      product_price REAL NOT NULL,
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS transactions (
+      transaction_id INTEGER PRIMARY KEY,
+      FOREIGN KEY(boughtitem) REFERENCES products(product_id),
+      product_quantity INTEGER NOT NULL,
+      transaction_value REAL NOT NULL,
+    );
+    """
+    ]
 
-        ## Call the Database Creation
-        self.TableTransaction(createInstruction)
+    ## Check for database file
+    while "main.py" not in os.listdir():
+      os.chdir("..")
 
-    ## When you want to add something to a database
-    def TableTransaction(self, instruction: str) -> None:
-        
-        ## Establish conneciton to database
-        connection = sqlite3.connect(self.dbName+".db")
-        table = connection.cursor()
+    ## If no database folder found, create one then change dir to it
+    if "databases" not in os.listdir():
+       os.mkdir("databases")
+       os.chdir("databases")
+    else: 
+      os.chdir("databases")
 
-        ## Do the instruction
-        table.execute(instruction)
+    ## Call the Database Creation for each table
+    for instruction in createInstruciton:
+      self.TableTransaction(createInstruction)
 
-        ## Save and exit
-        connection.commit()
-        connection.close()
-    
-    ## Fetch stuff from database
-    def ReturnRecords(self, instruction) -> list:
+  ## When you want to add something to a database
+  def TableTransaction(self, instruction: str) -> None:
 
-        ## Establish connection to the database
-        connection = sqlite3.connect(self.dbName+".db")
-        table = connection.cursor()
+      ## Establish conneciton to database
+      connection = sqlite3.connect(self.dbName+".db")
+      table = connection.cursor()
 
-        ## Do the instruction
-        table.execute(instruction)
+      ## Do the instruction
+      table.execute(instruction)
 
-        ## Return the results as a list of all the results
-        return table.fetchall()
-    
-    ## Remove the duplicates in the database
-    def RemoveDuplicates(self, columnnames: tuple) -> None:
+      ## Save and exit
+      connection.commit()
+      connection.close()
 
-        ## Get all items from a given table
-        returnall = """
-        SELECT {}
-        FROM {}
-        """.format(columnnames, self.tableName)
+  ## Fetch stuff from database
+  def ReturnRecords(self, instruction) -> list:
 
-        ## Get a list of the records
-        records = self.ReturnRecords(returnall)
-        for item in records:
-            print(item)
-        wasterecords = []
+    ## Establish connection to the database
+    connection = sqlite3.connect(self.dbName+".db")
+    table = connection.cursor()
 
-        ## Get a list of all the records that appear more than once
-        for record in records: 
-            count = records.count(record)
-            if count >= 2 and record not in wasterecords:
-                wasterecords.append(record)
-        
-        ## Replace all duplicates with a new record
-        for record in wasterecords:
+    ## Do the instruction
+    table.execute(instruction)
 
-            ## Remove all records of a given type from a given table
-            removewasterecord = """
-            DELETE FROM {}
-            WHERE prid="{}"
-            """.format(self.tableName, record[2])
+    ## Return the results as a list of all the results
+    return table.fetchall()
 
-            self.TableTransaction(removewasterecord)
+  ## Remove the duplicates in the database
+  def RemoveDuplicates(self, columnnames: tuple) -> None:
 
-            ## Add the record back once
-            replacement = record
-            insertreplacement = """
-            INSERT INTO {}
-            VALUES {}
-            """.format(self.tableName, record)
+    ## Get all items from a given table
+    returnall = """
+    SELECT {}
+    FROM {}
+    """.format(columnnames, self.tableName)
 
-            self.TableTransaction(insertreplacement)
+    ## Get a list of the records
+    records = self.ReturnRecords(returnall)
+    for item in records:
+      print(item)
+    wasterecords = []
 
-    def Clear(self):
-        
-        instruction = """
-        SELECT name from sqlite_master where type="table"
-        """
+    ## Get a list of all the records that appear more than once
+    for record in records: 
+      count = records.count(record)
+      if count >= 2 and record not in wasterecords:
+          wasterecords.append(record)
 
-        ## Get all the tables in string form
-        tables = self.ReturnRecords(instruction)
-        tables = [str(table) for table in tables]
-        
-        ## Remove any remaining speech marks or brackets
-        tables = [table.replace("('", "") for table in tables]
-        tables = [table.replace("',)", "") for table in tables]
+    ## Replace all duplicates with a new record
+    for record in wasterecords:
 
-        for table in tables:
-            print(table)
-            if not "sqlite_sequence" in table:
-                dropcommand = """
-                DROP TABLE {}
-                """.format(table)
-                
-                db.TableTransaction(dropcommand)
+      ## Remove all records of a given type from a given table
+      removewasterecord = """
+      DELETE FROM {}
+      WHERE prid="{}"
+      """.format(self.tableName, record[2])
+
+      self.TableTransaction(removewasterecord)
+
+      ## Add the record back once
+      replacement = record
+      insertreplacement = """
+      INSERT INTO {}
+      VALUES {}
+      """.format(self.tableName, record)
+
+      self.TableTransaction(insertreplacement)
+
+  def Clear(self):
+
+    instruction = """
+    SELECT name from sqlite_master where type="table"
+    """
+
+    ## Get all the tables in string form
+    tables = self.ReturnRecords(instruction)
+    tables = [str(table) for table in tables]
+
+    ## Remove any remaining speech marks or brackets
+    tables = [table.replace("('", "") for table in tables]
+    tables = [table.replace("',)", "") for table in tables]
+
+    for table in tables:
+      print(table)
+      if not "sqlite_sequence" in table:
+          dropcommand = """
+          DROP TABLE {}
+          """.format(table)
+          
+          db.TableTransaction(dropcommand)
 
