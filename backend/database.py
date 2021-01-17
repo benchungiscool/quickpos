@@ -5,28 +5,28 @@ import os
 ## The class to use if you need to interact with databases
 ## Requires a filename, a tablename and an instruction to start
 class Database:
-  ## Make sure all of the directories are in and create a table if necessary
-  def __init__(self, dbName: str, tablename: str) -> None:
+  ## Make sure all of the directories are set up  and create a table if necessary
+  def __init__(self) -> None:
 
-    ## We can use these later
-    self.dbName = dbName
-    self.tableName = tablename
+    ## Set up filename
+    self.dbName = "transactions.db"
 
     createInstruction = [
     """
-    CREATE TABLE IF NOT EXISTS products(
-      product_id INT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS products (
+      product_id INTEGER,
       product_name TEXT NOT NULL,
-      added_date date(YYYY-MM-DD HH:MM),
       product_price REAL NOT NULL,
+      PRIMARY KEY (product_id)
     );
     """,
     """
     CREATE TABLE IF NOT EXISTS transactions (
       transaction_id INTEGER PRIMARY KEY,
-      FOREIGN KEY(boughtitem) REFERENCES products(product_id),
+      products_id INTEGER NOT NULL,
       product_quantity INTEGER NOT NULL,
       transaction_value REAL NOT NULL,
+      FOREIGN KEY(products_id) REFERENCES products(product_id)
     );
     """
     ]
@@ -37,28 +37,39 @@ class Database:
 
     ## If no database folder found, create one then change dir to it
     if "databases" not in os.listdir():
-       os.mkdir("databases")
-       os.chdir("databases")
+      os.mkdir("databases")
+      os.chdir("databases")
     else: 
       os.chdir("databases")
-
+    
     ## Call the Database Creation for each table
-    for instruction in createInstruciton:
-      self.TableTransaction(createInstruction)
+    for instruction in createInstruction:
+      self.TableTransaction(instruction)
+
+  def GetCurrentID(self, tablename: str):
+    instruction = """
+    SELECT MAX({}) FROM {}
+    """.format(str(tablename[:-1])+"_id", tablename)
+
+    results = self.TableTransaction(instruction)
+    
+    if not results:
+      results = 0
+    return results + 1
 
   ## When you want to add something to a database
   def TableTransaction(self, instruction: str) -> None:
 
-      ## Establish conneciton to database
-      connection = sqlite3.connect(self.dbName+".db")
-      table = connection.cursor()
+    ## Establish conneciton to database
+    connection = sqlite3.connect(self.dbName+".db")
+    table = connection.cursor()
 
-      ## Do the instruction
-      table.execute(instruction)
+    ## Do the instruction
+    table.execute(instruction)
 
-      ## Save and exit
-      connection.commit()
-      connection.close()
+    ## Save and exit
+    connection.commit()
+    connection.close()
 
   ## Fetch stuff from database
   def ReturnRecords(self, instruction) -> list:
@@ -73,47 +84,6 @@ class Database:
     ## Return the results as a list of all the results
     return table.fetchall()
 
-  ## Remove the duplicates in the database
-  def RemoveDuplicates(self, columnnames: tuple) -> None:
-
-    ## Get all items from a given table
-    returnall = """
-    SELECT {}
-    FROM {}
-    """.format(columnnames, self.tableName)
-
-    ## Get a list of the records
-    records = self.ReturnRecords(returnall)
-    for item in records:
-      print(item)
-    wasterecords = []
-
-    ## Get a list of all the records that appear more than once
-    for record in records: 
-      count = records.count(record)
-      if count >= 2 and record not in wasterecords:
-          wasterecords.append(record)
-
-    ## Replace all duplicates with a new record
-    for record in wasterecords:
-
-      ## Remove all records of a given type from a given table
-      removewasterecord = """
-      DELETE FROM {}
-      WHERE prid="{}"
-      """.format(self.tableName, record[2])
-
-      self.TableTransaction(removewasterecord)
-
-      ## Add the record back once
-      replacement = record
-      insertreplacement = """
-      INSERT INTO {}
-      VALUES {}
-      """.format(self.tableName, record)
-
-      self.TableTransaction(insertreplacement)
-
   def Clear(self):
 
     instruction = """
@@ -121,19 +91,13 @@ class Database:
     """
 
     ## Get all the tables in string form
-    tables = self.ReturnRecords(instruction)
-    tables = [str(table) for table in tables]
-
-    ## Remove any remaining speech marks or brackets
-    tables = [table.replace("('", "") for table in tables]
-    tables = [table.replace("',)", "") for table in tables]
+    tables = [str(table).strip("('").strip("'),") for table in self.ReturnRecords(instruction)]
 
     for table in tables:
-      print(table)
       if not "sqlite_sequence" in table:
-          dropcommand = """
-          DROP TABLE {}
-          """.format(table)
+        dropcommand = """
+        DROP TABLE {}
+        """.format(table)
           
-          db.TableTransaction(dropcommand)
+        db.TableTransaction(dropcommand)
 
