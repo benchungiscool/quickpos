@@ -9,35 +9,37 @@ class Product:
   def CreateProduct(self, productname: str, productprice: float) -> None:
 
     ## Have to remove quotations, they break the insertion
-    productname = productname.replace("'", "")
+    if productname and "'" in productname:
+      productname = productname.replace("'", "")
 
     ## Send request to database
     instruction = """
-    INSERT INTO products (product_id, product_name, product_price)
-    VALUES ({}'{}', {})
-    """.format(str(self.db.GetCurrentID("products")) + ", ", productname, productprice)
+    INSERT INTO products (product_name, product_price)
+    VALUES ('{}', {})
+    """.format(productname, productprice)
 
     self.db.TableTransaction(instruction)
 
   ## Remove the duplicates in the database
-  def RemoveDuplicates(self, tablename: str) -> None:
+  def RemoveDuplicates(self) -> None:
 
     ## Get all items from a given table
     instruction = """
     SELECT *
-    FROM {}
-    """.format(tablename)
+    FROM products
+    """
     results = self.db.ReturnRecords(instruction)
     
-    ## Remove identifier, we don't need it
-    results = results[1:]
+    ## Remove identifiers from individual records
+    results = [tuple(list(result)[1:]) for result in results]
 
-    results = list(dict.fromkeys(results[1:]))
+    ## Remove duplicate items from list
+    results = list(set([i for i in results]))
     
     ## Remove all items from database
     instruction = """
-    DELETE FROM {}
-    """.format(tablename)
+    DELETE FROM products
+    """
     self.db.TableTransaction(instruction)
 
     ## Add new items to database
@@ -45,32 +47,16 @@ class Product:
       self.CreateProduct(record[0], record[1])
 
   def SearchForProduct(productname: str) -> list:
+    ## Select all items with given name
     instruction = """
     SELECT * FROM products
     WHERE productname="{}"
     """.format(productname)
 
+    ## Get all results for this search
     results = self.db.ReturnRecords(instruction)
 
+    ## If something found, return the results
+    if not results:
+      return "Nothing Found"
     return results
-
- 
-if __name__ == "__main__": 
-  products = [
-  ["Branston's Beans", 0.75],
-  ["Hovis Bread", 1]
-  ]
-
-  prod = Product()
-  for product in products:
-    for i in range(2):
-      prod.CreateProduct(product[0], product[1])
-
-  instruction = """
-  SELECT * FROM products
-  """
-  for item in prod.db.ReturnRecords(instruction):
-    print(item)
-
-  prod.RemoveDuplicates("products")
-

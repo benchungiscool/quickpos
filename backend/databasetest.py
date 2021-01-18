@@ -1,53 +1,20 @@
-from database import Database
+from backend.database import Database
+from backend.product import Product
 
-# Test
-class DBTest:
+if __name__ == "__main__": 
+  products = [
+    ["Branston's Beans", 0.75],
+    ["Hovis Bread", 1]
+  ]
 
-    ## Define some key commands
-    self.start = """
-    CREATE TABLE IF NOT EXISTS products (
-        [prid] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        [name] TEXT NOT NULL,
-        [price] INTEGER NOT NULL);
-    """
+  prod = Product()
+  for product in products:
+    for i in range(2):
+      prod.CreateProduct(product[0], product[1])
 
-    self.returnall = """
-    SELECT * 
-    FROM {}
-    """.format(tableName)
+  instruction = """
+  SELECT * FROM products
+  """
 
-def __init__(self):
-    dbName = "items"
-    tableName = "products"
-    
+  prod.RemoveDuplicates("products")
 
-    
-
-    products = [
-        ("Sausages", 0.50),
-        ("Wotsits", -1.5),
-        ("Bananas", -1.25),
-        ("Playboy Magazine", 4)
-    ]
-
-    if __name__ == "__main__":  
-        db = Database(dbName, tableName, start)
-
-        for product in products:
-
-            insertion = """
-            INSERT INTO {} {}
-            VALUES {}
-            """.format(tableName, "(name, price)", product)
-
-            for record in range(19):
-                db.TableTransaction(insertion)
-
-        for record in db.ReturnRecords(returnall):
-            print(record)
-        
-        print("\n")
-        db.Clear()
-
-        for record in db.ReturnRecords(returnall):
-            print(record)
