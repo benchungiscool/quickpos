@@ -1,3 +1,4 @@
-clean up the database test file
-some provision to store some popular database requests
-tests folder 
+Current Task: Finish product-api that sits on top of database
+Sub tasks:
+	- Fix the primary key system in sqlite3 table
+
