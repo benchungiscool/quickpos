@@ -1,4 +1,5 @@
 Current Task: Finish product-api that sits on top of database
 Sub tasks:
-	- Fix the primary key system in sqlite3 table
+	- Fix the primary key system in sqlite3 table, currently returns None as primary key
+	- Get DATETIME working in sqlite3 transaction table (do this later)
 

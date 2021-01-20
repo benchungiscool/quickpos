@@ -12,12 +12,17 @@ class Product:
     if productname and "'" in productname:
       productname = productname.replace("'", "")
 
+    ## Check lastrowid isn't irrational
+    instruction = """
+    SELECT COUNT(*) FROM products;
+    """
+    lastrowid = int(self.db.ReturnRecords(instruction)[0][0]) + 1
+
     ## Send request to database
     instruction = """
-    INSERT INTO products (product_name, product_price)
-    VALUES ('{}', {})
-    """.format(productname, productprice)
-
+    INSERT INTO products (id, product_name, product_price)
+    VALUES ({}, '{}', {})
+    """.format(lastrowid, productname, productprice)
     self.db.TableTransaction(instruction)
 
   ## Remove the duplicates in the database

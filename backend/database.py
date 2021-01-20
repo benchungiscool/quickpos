@@ -8,27 +8,24 @@ class Database:
   ## Make sure all of the directories are set up  and create a table if necessary
   def __init__(self) -> None:
 
-    ## Set up filename
-    self.dbName = "transactions.db"
-
+    ## Don't need to fix this rn, problem with datetime
+    transactionInstruction = """ 
+    CREATE TABLE IF NOT EXISTS transactions (
+      id INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      product_quantity INTEGER NOT NULL,
+      transaction_value REAL NOT NULL,
+      transaction_date datetime('yyyy-MM-dd HH:mm')
+    );
+    """
     createInstruction = [
     """
     CREATE TABLE IF NOT EXISTS products (
-      product_id INTEGER,
+      id INTEGER,
       product_name TEXT NOT NULL,
-      product_price REAL NOT NULL,
-      PRIMARY KEY (product_id)
+      product_price REAL NOT NULL
     );
     """,
-    """
-    CREATE TABLE IF NOT EXISTS transactions (
-      transaction_id INTEGER PRIMARY KEY,
-      products_id INTEGER NOT NULL,
-      product_quantity INTEGER NOT NULL,
-      transaction_value REAL NOT NULL,
-      FOREIGN KEY(products_id) REFERENCES products(product_id)
-    );
-    """
     ]
 
     ## Check for database file
@@ -38,54 +35,36 @@ class Database:
     ## If no database folder found, create one then change dir to it
     if "databases" not in os.listdir():
       os.mkdir("databases")
-      os.chdir("databases")
-    else: 
-      os.chdir("databases")
+    os.chdir("databases")
+
+    ## Set up filename and open a cursor
+    self.dbName = "transactions.db"
+    self.table = self.OpenCursor()
     
     ## Call the Database Creation for each table
     for instruction in createInstruction:
       self.TableTransaction(instruction)
 
-  def GetCurrentID(self, tablename: str):
-    instruction = """
-    SELECT MAX({}) FROM {}
-    """.format(str(tablename[:-1])+"_id", tablename)
-
-    results = self.TableTransaction(instruction)
+  ## Returns a cursor object, helpful in later functions
+  def OpenCursor(self):
+    self.connection = sqlite3.connect(self.dbName)
+    return self.connection.cursor()
     
-    if not results:
-      results = 0
-    return results + 1
-
   ## When you want to add something to a database
   def TableTransaction(self, instruction: str) -> None:
-
-    ## Establish conneciton to database
-    connection = sqlite3.connect(self.dbName+".db")
-    table = connection.cursor()
-
     ## Do the instruction
-    table.execute(instruction)
-
-    ## Save and exit
-    connection.commit()
-    connection.close()
+    self.table.execute(instruction)
+    self.connection.commit()
 
   ## Fetch stuff from database
   def ReturnRecords(self, instruction) -> list:
-
-    ## Establish connection to the database
-    connection = sqlite3.connect(self.dbName+".db")
-    table = connection.cursor()
-
     ## Do the instruction
-    table.execute(instruction)
+    self.table.execute(instruction)
 
     ## Return the results as a list of all the results
-    return table.fetchall()
+    return self.table.fetchall()
 
   def Clear(self):
-
     instruction = """
     SELECT name from sqlite_master where type="table"
     """
@@ -99,5 +78,5 @@ class Database:
         DROP TABLE {}
         """.format(table)
           
-        db.TableTransaction(dropcommand)
+        self.TableTransaction(dropcommand)
 
