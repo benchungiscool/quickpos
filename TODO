@@ -1,4 +1,1 @@
-Current Task: Finish product-api that sits on top of database
-Sub tasks:
-	- Get DATETIME working in sqlite3 transaction table (do this later)
-
+Current Task: Finish Transactions api

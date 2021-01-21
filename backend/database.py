@@ -6,18 +6,7 @@ import os
 ## Requires a filename, a tablename and an instruction to start
 class Database:
   ## Make sure all of the directories are set up  and create a table if necessary
-  def __init__(self) -> None:
-
-    ## Don't need to fix this rn, problem with datetime
-    transactionInstruction = """ 
-    CREATE TABLE IF NOT EXISTS transactions (
-      id INTEGER NOT NULL,
-      product_id INTEGER NOT NULL,
-      product_quantity INTEGER NOT NULL,
-      transaction_value REAL NOT NULL,
-      transaction_date datetime('yyyy-MM-dd HH:mm')
-    );
-    """
+  def __init__(self):
     createInstruction = [
     """
     CREATE TABLE IF NOT EXISTS products (
@@ -26,6 +15,16 @@ class Database:
       product_price REAL NOT NULL
     );
     """,
+    """ 
+    CREATE TABLE IF NOT EXISTS transactions (
+      id INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      product_quantity INTEGER NOT NULL,
+      transaction_value REAL NOT NULL,
+      transaction_date strftime,
+      transaction_time time
+    );
+    """
     ]
 
     ## Check for database file
@@ -49,22 +48,32 @@ class Database:
   def OpenCursor(self):
     self.connection = sqlite3.connect(self.dbName)
     return self.connection.cursor()
+
+  def LastRowID(self, tablename: str) -> int:
+    instruction = """
+    SELECT COUNT(*) FROM {};
+    """.format(tablename)
+    return self.ReturnRecords(instruction)[0][0]
     
   ## When you want to add something to a database
-  def TableTransaction(self, instruction: str) -> None:
+  def TableTransaction(self, instruction: str):
     ## Do the instruction
     self.table.execute(instruction)
     self.connection.commit()
 
   ## Fetch stuff from database
   def ReturnRecords(self, instruction) -> list:
-    ## Do the instruction
     self.table.execute(instruction)
-
-    ## Return the results as a list of all the results
     return self.table.fetchall()
 
-  def Clear(self):
+  ## Remove all data from a table
+  def ClearTable(self, tablename: str):
+    instruction = """
+    DELETE FROM {}
+    """.format(tablename)
+
+  ## Removes all database tables from a file 
+  def ClearFile(self):
     instruction = """
     SELECT name from sqlite_master where type="table"
     """

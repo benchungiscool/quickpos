@@ -13,10 +13,7 @@ class Product:
       productname = productname.replace("'", "")
 
     ## Check lastrowid isn't irrational
-    instruction = """
-    SELECT COUNT(*) FROM products;
-    """
-    lastrowid = int(self.db.ReturnRecords(instruction)[0][0]) + 1
+    lastrowid = self.db.LastRowID("products") + 1
 
     ## Send request to database
     instruction = """
@@ -35,12 +32,9 @@ class Product:
     """
     results = self.db.ReturnRecords(instruction)
     
-    ## Remove identifiers from individual records
-    results = [tuple(list(result)[1:]) for result in results]
-
-    ## Remove duplicate items from list
-    results = list(set([i for i in results]))
-    
+    ## Remove identifiers from individual records, remove duplicates in order
+    results = list(dict.fromkeys([tuple(list(result)[1:]) for result in results]))
+   
     ## Remove all items from database
     instruction = """
     DELETE FROM products
