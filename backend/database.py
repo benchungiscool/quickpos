@@ -20,9 +20,7 @@ class Database:
       id INTEGER NOT NULL,
       product_id INTEGER NOT NULL,
       product_quantity INTEGER NOT NULL,
-      transaction_value REAL NOT NULL,
-      transaction_date strftime,
-      transaction_time time
+      transaction_datetime datetime
     );
     """
     ]
