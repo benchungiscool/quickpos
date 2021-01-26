@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Choose Product</title>
+	</head>
+	<body>
+		<h1>Choose Product</h1>
+		<h3>Below is a list of editable Products</h3>
+		<ul>
+			{% for product in products %}
+				<li>
+					<a href="{{ url_for('Product', product_id=product[0]) }}">
+						{{ product[1] }}
+					</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</body>
+</html>
