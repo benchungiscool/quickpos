@@ -1,6 +1,6 @@
-from backend.database import Database
-from backend.product import Product
-from backend.transaction import Transaction
+from quickpos.database import Database
+from quickpos.product import Product
+from quickpos.transaction import Transaction
 from random import shuffle, randint, choice
 
 class Test:
