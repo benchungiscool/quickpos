@@ -1,16 +1,20 @@
-{% set products = productinterface.GetAllProducts() %}
+{% set prod = productinterface() %}
+{% set products = prod.GetAllProducts() %}
 <!DOCTYPE html>
 <html>
 	<head>
 		<title>Choose Product</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 	</head>
 	<body>
-		<h1>Choose Product</h1>
-		<h3>Below is a list of editable Products</h3>
+		<h1>Products</h1>
+		<a href="{{ url_for('Main') }}" class="btn btn-primary">Home</a>
+		<a href="{{ url_for('CreateProduct') }}" class="btn btn-primary">Create Product</a>
+		<h3>Edit Products</h3>
 		<ul>
 			{% for product in products %}
 				<li>
-					<a href="{{ url_for('Product', product_id=product[0]) }}">
+					<a href="{{ url_for('ProductPage', product_id=product[0]) }}">
 						{{ product[1] }}
 					</a>
 				</li>

@@ -1,3 +1,4 @@
+{% set productinterface = productinterface() %}
 {% set product = productinterface.SearchForProduct(product_id) %}
 <!DOCTYPE html>
 <html>
@@ -6,11 +7,14 @@
 	</head>
 	<body>
 		<h1>Edit {{ product[1] }}</h1>
-		<form action="{{ url_for('EditProduct', product_id=product[0]) }}" method="post">
-			<p>Product Name</p>
+		<a href="{{ url_for('DeleteProduct', product_id=product[0]) }}">Delete Product</a>
+		<form action="{{ url_for('EditProduct', product_id=product[0]) }}" method="POST">
+			<h4>Product Name</h4>
 			<input type="text" name="prod_name" />
-			<p>Product Price</p>
+			<h4>Product Price</h4>
 			<input type="text" name="prod_price" />
+			<input type="submit" value="Submit">
 		</form>
+			<a href="{{ url_for('Main') }}">Home</a>
 	</body>
 </html>

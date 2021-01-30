@@ -21,6 +21,21 @@ class Product:
     """.format(lastrowid, productname, productprice)
     self.db.TableTransaction(instruction)
 
+  def UpdateProduct(self, record: list):
+    instruction = """
+    UPDATE products
+    SET product_name = '{}', product_price = {}
+    WHERE id = {};
+    """.format(record[1].replace("'", ""), record[2], record[0])
+    self.db.TableTransaction(instruction)
+
+  def DeleteProduct(self, product_id: int):
+    instruction = """
+    DELETE FROM products
+    WHERE id={}
+    """.format(product_id)
+    self.db.TableTransaction(instruction)
+    
   ## Remove the duplicates in the database
   def RemoveDuplicates(self) -> None:
     ## Get all items from a given table

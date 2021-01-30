@@ -1,0 +1,19 @@
+{% set productinterface = productinterface() %}
+{% set product = productinterface.SearchForProduct(product_id) %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Create Product</title>
+	</head>
+	<body>
+		<h1>Create Product</h1>
+		<form action="{{ url_for('SendNewProduct') }}" method="POST">
+			<p>Product Name</p>
+			<input type="text" name="prod_name" />
+			<p>Product Price</p>
+			<input type="text" name="prod_price" />
+			<input type="submit" value="Submit">
+		</form>
+		<a href="{{ url_for('Main') }}">Home</a>
+	</body>
+</html>

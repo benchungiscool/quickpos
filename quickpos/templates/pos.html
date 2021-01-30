@@ -1,0 +1,25 @@
+{% set productinterface = productinterface() %}
+{% set product = productinterface.SearchForProduct(product_id) %}
+{% set transaction = transactioninterface() %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Point Of Sale</title>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pos.css') }}" >
+	</head>
+	<body>
+		<h1 class="title">Point Of Sale</h1>
+		<div class="basket">
+			<h3>Items in basket</h3>
+			<ol>
+				{% if basket|length %}
+					{% for item in basket  %}
+						<li>item[1]</li>	
+					{% endfor %}
+				{% else %}
+					<li>No items in basket</li>
+				{% endif %}
+			</ol>
+		</div>
+	</body>
+</html>
