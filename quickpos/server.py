@@ -28,6 +28,7 @@ def DeleteProduct(product_id):
 @app.route("/Product/Edit/Send/<int:product_id>", methods=['GET', 'POST'])
 def EditProduct(product_id):
   editedfields = []
+  prod = Product()
   record = list(prod.SearchForProduct(product_id))
   for field in ['prod_name', 'prod_price']:
     if data := request.form[field]:
@@ -38,7 +39,6 @@ def EditProduct(product_id):
   for i, field in enumerate(record):
     if editedfields[i]:
       record[i] = editedfields[i]
-  prod = Product()
   prod.UpdateProduct(record) 
   return redirect('/Product')
 
@@ -61,7 +61,8 @@ def SendNewProduct():
 ## The POS section
 @app.route("/POS")
 def PointOfSale():
-  return render_template("pos.html", productinterface=Product, transactioninterface=Transaction)
+  prod = Product()
+  return render_template("pos.html", products=zip(*(iter(prod.GetAllProducts()),) * 5), transactioninterface=Transaction)
 
 if __name__ == "__main__":
   app.run(debug=True)

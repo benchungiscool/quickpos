@@ -4,5 +4,11 @@
 
 .basket {
 	position: relative;
-	top: 20px;
+	align-content: left;
+	top: 120px;
+}
+
+.pos-grid {
+	position: absolute;
+	padding-left: 150px;
 }

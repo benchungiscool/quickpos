@@ -1,5 +1,3 @@
-{% set productinterface = productinterface() %}
-{% set product = productinterface.SearchForProduct(product_id) %}
 {% set transaction = transactioninterface() %}
 <!DOCTYPE html>
 <html>
@@ -20,6 +18,18 @@
 					<li>No items in basket</li>
 				{% endif %}
 			</ol>
+		</div>
+		<div class="pos-grid">
+				<table>
+					{% for row in products %}
+						<tr>
+							{% for i in row %}
+								<h3>{{ i[1] }}</h3>
+								<h4>{{ i[2] }}</h4>
+1							{% endfor %}
+						</tr>
+					{% endfor %}
+				</table>
 		</div>
 	</body>
 </html>
