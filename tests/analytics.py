@@ -7,8 +7,11 @@ class Test:
     self.prod = Product()
 
   def CalculateTransactionValues(self):
-    for i in self.tran.GetLedger():
-      print(i, self.tran.GetTransactionValue(i[0]))
+    totalvalue = 0
+    for item in self.tran.GetLedger():
+      totalvalue += self.tran.GetTransactionValue(item[0])
+    print("Total Earnings:", totalvalue)
+    print(self.tran.GetTransaction(1), self.tran.GetTransactionValue(1))
 
 if __name__ == "__main__":
   t = Test()

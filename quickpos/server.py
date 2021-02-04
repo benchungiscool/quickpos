@@ -62,7 +62,7 @@ def SendNewProduct():
 @app.route("/POS")
 def PointOfSale():
   prod = Product()
-  return render_template("pos.html", products=zip(*(iter(prod.GetAllProducts()),) * 5), transactioninterface=Transaction)
+  return render_template("pos.html", products=prod.GetAllProducts(), transactioninterface=Transaction)
 
 if __name__ == "__main__":
   app.run(debug=True)

@@ -5,6 +5,7 @@ from quickpos.product import Product
 class Transaction:
   def __init__(self):
     self.db = Database()
+    self.prod = Product()
     
   def RecordTransaction(self, prod_id: int, quantity: int):
     ## Get some information about the product
@@ -30,6 +31,9 @@ class Transaction:
   ## Get all items
   def GetLedger(self):
     return self.db.ReturnRecords("SELECT * FROM transactions")
+  
+  def GetTransaction(self, transaction_id: int) -> list:
+    return self.db.ReturnRecords("SELECT * FROM transactions WHERE id={}".format(transaction_id))
 
   ## Find an item by product id
   def SortByProductID(self, product_id: int) -> list:
@@ -63,10 +67,9 @@ class Transaction:
     return self.db.ReturnRecords(instruction)
 
   def GetTransactionValue(self, transaction_id: int) -> float:
-    prod = Product()
     value = 0
-    for i in self.SortByProductID(transaction_id):
-      print(i[1])
-      value += prod.SearchForProduct(i[1])[0][2]
+    transactions = map(lambda x: [x[1], x[2]], self.GetTransaction(transaction_id))
+    for product, quantity in map(lambda x: [x[1], x[2]], self.GetTransaction(transaction_id)):
+      value += self.prod.SearchForProduct(product)[2] * quantity
     return value
 

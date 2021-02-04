@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<title>Point Of Sale</title>
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pos.css') }}" >
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/a.css') }}" >
 	</head>
 	<body>
 		<h1 class="title">Point Of Sale</h1>
@@ -19,17 +19,10 @@
 				{% endif %}
 			</ol>
 		</div>
-		<div class="pos-grid">
-				<table>
-					{% for row in products %}
-						<tr>
-							{% for i in row %}
-								<h3>{{ i[1] }}</h3>
-								<h4>{{ i[2] }}</h4>
-1							{% endfor %}
-						</tr>
-					{% endfor %}
-				</table>
+		<div class="grid-container">
+			{% for item in products%}
+				<div class="grid-container">{{item[1]}}</div>
+			{% endfor %}
 		</div>
 	</body>
 </html>
