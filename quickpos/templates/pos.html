@@ -23,10 +23,10 @@
 		<section class="section">
 			<div class="container">
 				{% for row in products|batch(4) %}
-				<div class="columns is-multiline">
-					<div class="column is-one-quarter">
+				<div class="columns">
+					<div class="column">
 						{% for product in row %}
-						<p class="notificaiton is-danger">{{product[1]}}</p>	
+						<p class="button is-info">{{product[1]}}</p>	
 						{% endfor %}
 					</div>
 				</div>
