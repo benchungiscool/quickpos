@@ -67,7 +67,6 @@ def PointOfSale():
   products = prod.GetAllProducts()
   prod.RemoveDuplicates()
   if not basket:
-    formattedbasket = []
     return render_template("pos.html", products=products, t=Transaction)
   else:
     formattedbasket = list(dict.fromkeys(basket))
