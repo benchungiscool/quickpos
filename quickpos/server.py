@@ -3,6 +3,8 @@ from quickpos.product import Product
 from quickpos.transaction import Transaction
 app = Flask(__name__)
 
+basket = []
+
 ## Main page
 @app.route("/")
 def Main():
@@ -62,7 +64,21 @@ def SendNewProduct():
 @app.route("/POS")
 def PointOfSale():
   prod = Product()
-  return render_template("pos.html", products=prod.GetAllProducts(), transactioninterface=Transaction)
+  products = prod.GetAllProducts()
+  if not basket:
+    return render_template("pos.html", products=products, t=Transaction)
+  else:
+    return render_template("pos.html", products=products, basket=basket, t=Transaction)
+
+@app.route("/POS/<int:prid>")
+def AddToBasket(prid):
+  basket.append(Product().SearchForProduct(prid))
+  return redirect("/POS")
+
+@app.route("/POS/Clear")
+def ClearBasket():
+  basket = []
+  return redirect("/POS")
 
 if __name__ == "__main__":
   app.run(debug=True)

@@ -1,4 +1,4 @@
-{% set transaction = transactioninterface() %}
+{% set transaction = t() %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -8,25 +8,28 @@
 	</head>
 	<body>
 		<h1 class="title">Point Of Sale</h1>
-		<div class="basket">
-			<h3>Items in basket</h3>
-			<ol>
+		<aside class="menu sticky">
+			<p class="menu-label">Items in basket</p>
+			<ul id="menu" class"menu-list">
 				{% if basket|length %}
 					{% for item in basket  %}
-						<li>item[1]</li>	
+						<li>{{item[1]}}</li>
 					{% endfor %}
 				{% else %}
 					<li>No items in basket</li>
 				{% endif %}
-			</ol>
-		</div>
+			</ul>
+			<a href="{{ url_for('ClearBasket') }}">Clear Basket</a>
+		</aside>
 		<section class="section">
 			<div class="container">
-				{% for row in products|batch(4) %}
+				{% for row in products|batch(3) %}
 				<div class="columns">
 					<div class="column">
 						{% for product in row %}
-						<p class="button is-info">{{product[1]}}</p>	
+						<a class="button is-info" href="{{ url_for('AddToBasket', prid=product[0] )}}">
+							{{product[1]}}
+						</a>	
 						{% endfor %}
 					</div>
 				</div>
