@@ -84,6 +84,5 @@ class Database:
         dropcommand = """
         DROP TABLE {}
         """.format(table)
-          
         self.TableTransaction(dropcommand)
 
