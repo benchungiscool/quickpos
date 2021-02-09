@@ -7,31 +7,27 @@ class Transaction:
     self.db = Database()
     self.prod = Product()
     
-  def RecordTransaction(self, prod_id: int, quantity: int):
-    ## Get some information about the product
+  ## Record a transaction, takes a list of products and quantities as input
+  def RecordTransaction(self, prodlist: list):
     rowid = self.db.LastRowID("transactions")
-    instruction = "SELECT * FROM transactions WHERE product_id={}".format(prod_id)
-    price = self.db.ReturnRecords(instruction)
+    for prod, quantity in prodlist:
+      prod_id = prod[0]
+      instruction = """
+      INSERT INTO transactions (
+        id,
+        product_id,
+        product_quantity,
+        transaction_datetime
+      )
+      VALUES ({}, {}, {}, datetime('now', 'localtime'))
+      """.format(rowid, prod_id, quantity)
+      self.db.TableTransaction(instruction)
 
-    ## Add this data to an instruction template
-    instruction = """
-    INSERT INTO transactions (
-      id,
-      product_id,
-      product_quantity,
-      transaction_datetime
-    )
-    VALUES ({}, {}, {}, datetime('now', 'localtime'))
-    """.format(rowid, prod_id, quantity, price, quantity*price)
-    print(instruction)
-
-    ## Submit instruction to database
-    self.db.TableTransaction(instruction)
-
-  ## Get all items
+  ## Get all transactions
   def GetLedger(self):
     return self.db.ReturnRecords("SELECT * FROM transactions")
   
+  ## Get information on a specific transaction
   def GetTransaction(self, transaction_id: int) -> list:
     return self.db.ReturnRecords("SELECT * FROM transactions WHERE id={}".format(transaction_id))
 
@@ -59,6 +55,7 @@ class Transaction:
       """.format(furthestdate)
     return self.db.ReturnRecords(instruction)
 
+  ## Get all transactions ordered by value
   def SortByValue(self):
     instruction = """
     SELECT * FROM transactions
@@ -66,6 +63,7 @@ class Transaction:
     """
     return self.db.ReturnRecords(instruction)
 
+  ## Get the value of a given transaction
   def GetTransactionValue(self, transaction_id: int) -> float:
     value = 0
     transactions = map(lambda x: [x[1], x[2]], self.GetTransaction(transaction_id))

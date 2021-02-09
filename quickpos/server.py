@@ -63,6 +63,7 @@ def SendNewProduct():
 ## The POS section
 @app.route("/POS")
 def PointOfSale():
+  global formattedbasket
   prod = Product()
   products = prod.GetAllProducts()
   prod.RemoveDuplicates()
@@ -72,7 +73,6 @@ def PointOfSale():
     formattedbasket = list(dict.fromkeys(basket))
     for index, item in enumerate(formattedbasket):
       formattedbasket[index] = [item, basket.count(item)]
-    print(formattedbasket)
     return render_template("pos.html", products=products, basket=formattedbasket, t=Transaction)
 
 @app.route("/POS/<int:prid>")
@@ -85,6 +85,12 @@ def ClearBasket():
   global basket
   basket = []
   return redirect("/POS")
+
+@app.route("/POS/Send")
+def SendTransaction():
+  tran = Transaction()  
+  tran.RecordTransaction(formattedbasket)
+  return redirect("/POS/Clear")
 
 if __name__ == "__main__":
   app.run(debug=True)
