@@ -71,9 +71,10 @@ def PointOfSale():
     return render_template("pos.html", products=products, t=Transaction)
   else:
     formattedbasket = list(dict.fromkeys(basket))
+    price = sum(map(lambda x: x[2], basket))
     for index, item in enumerate(formattedbasket):
       formattedbasket[index] = [item, basket.count(item)]
-    return render_template("pos.html", products=products, basket=formattedbasket, t=Transaction)
+    return render_template("pos.html", products=products, basket=formattedbasket, price=price)
 
 @app.route("/POS/<int:prid>")
 def AddToBasket(prid):

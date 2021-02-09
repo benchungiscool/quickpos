@@ -18,6 +18,9 @@
 					<li>No items in basket</li>
 				{% endif %}
 			</ul>
+			{% if price %}
+				<p>Price: {{ price }}</p>
+			{% endif %}
 			<a href="{{ url_for('SendTransaction') }}">Send Transaction</a><br>
 			<a href="{{ url_for('ClearBasket') }}">Clear Basket</a>
 		</aside>
