@@ -20,4 +20,9 @@ pip install -r requirements.txt
 ```
 
 ## Run
-To run, use the included run.bat/sh files, depending on which operating system you run.
+
+### Bash
+Run run.sh
+
+### Windows
+Run run.bat **in command prompt** and then run "python -m quickpos.server"
