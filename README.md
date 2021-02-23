@@ -1,5 +1,5 @@
 # QuickPOS
-A point of sale terminal for small business owners based on Python and Tkinter
+A point of sale terminal for small business owners based on Python and Flask
 
 ## Install
 To get started, run the following shell commands.
