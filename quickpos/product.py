@@ -11,7 +11,7 @@ class Product:
     if productname and "'" in productname:
       productname = productname.replace("'", "")
 
-    ## Check lastrowid isn't irrational
+    ## Increment rowid
     lastrowid = self.db.LastRowID("products") + 1
 
     ## Send request to database
@@ -21,6 +21,7 @@ class Product:
     """.format(lastrowid, productname, productprice)
     self.db.TableTransaction(instruction)
 
+  ## Update a product with a given id
   def UpdateProduct(self, record: list):
     instruction = """
     UPDATE products
@@ -29,6 +30,7 @@ class Product:
     """.format(record[1].replace("'", ""), record[2], record[0])
     self.db.TableTransaction(instruction)
 
+  ## Delete records which have a given product_id
   def DeleteProduct(self, product_id: int):
     instruction = """
     DELETE FROM products
@@ -58,7 +60,7 @@ class Product:
     for record in results:
       self.CreateProduct(record[0], record[1])
 
-  ## Get all the products
+  ## Get all products
   def GetAllProducts(self) -> list: 
     return self.db.ReturnRecords("SELECT * FROM products")
 

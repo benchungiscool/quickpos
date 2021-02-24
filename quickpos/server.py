@@ -76,9 +76,16 @@ def PointOfSale():
       formattedbasket[index] = [item, basket.count(item)]
     return render_template("pos.html", products=products, basket=formattedbasket, price=price)
 
-@app.route("/POS/<int:prid>")
+@app.route("/POS/Add/<int:prid>")
 def AddToBasket(prid):
   basket.append(Product().SearchForProduct(prid))
+  return redirect("/POS")
+
+@app.route("/POS/Remove/<int:item>")
+def RemoveItem(item: int):
+  global basket
+  location = list(map(lambda x: x[0], basket)).index(item)
+  basket.pop(location)
   return redirect("/POS")
 
 @app.route("/POS/Clear")
@@ -94,5 +101,5 @@ def SendTransaction():
   return redirect("/POS/Clear")
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(host='0.0.0.0', port=5000, debug=True)
 

@@ -69,6 +69,7 @@ class Database:
     instruction = """
     DELETE FROM {}
     """.format(tablename)
+    self.TableTransaction(instruction)
 
   ## Removes all database tables from a file 
   def ClearFile(self):
@@ -78,7 +79,6 @@ class Database:
 
     ## Get all the tables in string form
     tables = [str(table).strip("('").strip("'),") for table in self.ReturnRecords(instruction)]
-
     for table in tables:
       if not "sqlite_sequence" in table:
         dropcommand = """
