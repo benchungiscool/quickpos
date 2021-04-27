@@ -1,82 +1,93 @@
 from quickpos.database import Database
 
-
-## Product API
+## Product API
 class Product:
   def __init__(self):
     self.db = Database()
 
-  def CreateProduct(self, productname: str, productprice: float) -> None:
-    ## Have to remove quotations, they break the insertion
-    if productname and "'" in productname:
-      productname = productname.replace("'", "")
-
-    ## Increment rowid
-    lastrowid = self.db.LastRowID("products") + 1
-
-    ## Send request to database
+  ## Creates a product with given name, price and stock
+  def CreateProduct(self, name, price, stock):
+    ## Ensure stock and price are both the correct datatype
+    stock = int(stock)
+    price = float(price)
+    ## If the price is below 0, return
+    if price <= 0:
+      return
+    ## Get primary key and add this to datasbase instruciton with name, price and stock
+    lastrowid = self.db.GetLastRowID("products")
     instruction = """
-    INSERT INTO products (id, product_name, product_price)
-    VALUES ({}, '{}', {})
-    """.format(lastrowid, productname, productprice)
+    INSERT INTO products (product_id, product_name, product_price, stock)
+    VALUES ({}, "{}", {}, {})
+    """.format(lastrowid, name, price, stock)
+    ## Send this to database
     self.db.TableTransaction(instruction)
 
-  ## Update a product with a given id
-  def UpdateProduct(self, record: list):
+  ## Change the stock level of a given value by a given increment
+  def ChangeStockLevel(self, product, value):
+    ## If stock level already exists, add this to the increment provided.
+    if stock := self.GetProduct(product)[3]:
+      value += stock
+    ## Format instruction with product key and new value
     instruction = """
     UPDATE products
-    SET product_name = '{}', product_price = {}
-    WHERE id = {};
-    """.format(record[1].replace("'", ""), record[2], record[0])
+    SET stock = {}
+    WHERE product_id = {}
+    """.format(value, product)
+    ## Send this instruction to database
     self.db.TableTransaction(instruction)
+  
+  ## Returns the stock level for a product
+  def GetStockLevel(self, product):
+    ## Format instruction with product id
+    instruction = """
+    SELECT stock FROM products
+    WHERE product_id = {};
+    """.format(product)
+    ## Return item from database
+    return self.db.ReturnRecords(instruction)[0][0]
 
-  ## Delete records which have a given product_id
-  def DeleteProduct(self, product_id: int):
+  ## Remove a product from the database
+  def DeleteProduct(self, product_id):
     instruction = """
     DELETE FROM products
-    WHERE id={}
+    WHERE product_id = {};
     """.format(product_id)
     self.db.TableTransaction(instruction)
-    
-  ## Remove the duplicates in the database
-  def RemoveDuplicates(self) -> None:
-    ## Get all items from a given table
-    instruction = """
-    SELECT *
-    FROM products
-    """
-    results = self.db.ReturnRecords(instruction)
-    
-    ## Remove identifiers from individual records, remove duplicates in order
-    results = list(dict.fromkeys([tuple(list(result)[1:]) for result in results]))
-   
-    ## Remove all items from database
-    instruction = """
-    DELETE FROM products
-    """
-    self.db.TableTransaction(instruction)
 
-    ## Add new items to database
-    for record in results:
-      self.CreateProduct(record[0], record[1])
+  ## Remove duplicate records from database
+  def RemoveDuplicates(self):
+    ## Get a unique list of products
+    products = list(map(lambda x: x[1:], self.GetAllProducts()))
+    products = list(dict.fromkeys(products))
+    ## Clear products table
+    self.db.ClearTable("products")
+    ## Add the unique products to the database
+    for name, price, stock in products:
+      self.CreateProduct(name, price, stock)
 
-  ## Get all products
-  def GetAllProducts(self) -> list: 
+  ## Return the record of every product
+  def GetAllProducts(self):
     return self.db.ReturnRecords("SELECT * FROM products")
-
-  ## Get details of a product by using its ID
-  def SearchForProduct(self, product_id: int) -> list:
-    ## Search for product with its ID
+      
+  ## Return the record of a specific product  
+  def GetProduct(self, product_id):
+    ## Format instruction with record for a specific product
     instruction = """
     SELECT * FROM products
-    WHERE id="{}"
+    WHERE product_id = {}
     """.format(product_id)
+    ## Return
+    return self.db.ReturnRecords(instruction)[0]
 
-    ## Get all results for this search
-    results = self.db.ReturnRecords(instruction)
+  ## Update an existing record
+  def UpdateProduct(self, product_id, product_name, product_price):
+    ## Set name and price to x where product id is y
+    instruction = """
+    UPDATE products
+    SET product_name = "{}", product_price = {}
+    WHERE product_id = {}
+    """.format(product_name, product_price, product_id)
+    ## Send this instruction to the database
+    self.db.TableTransaction(instruction)
 
-    ## We can assume IDs are unique, so just return the first item found
-    if not results:
-      return "Nothing Found"
-    return results[0]
-
+## Main loop

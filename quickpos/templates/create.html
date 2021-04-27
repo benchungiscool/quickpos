@@ -1,5 +1,3 @@
-{% set productinterface = productinterface() %}
-{% set product = productinterface.SearchForProduct(product_id) %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -12,6 +10,8 @@
 			<input type="text" name="prod_name" />
 			<p>Product Price</p>
 			<input type="text" name="prod_price" />
+			<p>Starting Stock</p>
+			<input type="text" name="prod_stock" />
 			<input type="submit" value="Submit">
 		</form>
 		<a href="{{ url_for('Main') }}">Home</a>

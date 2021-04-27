@@ -52,7 +52,6 @@ class Test:
       basket = []
       for item in products:
         basket.append(choice(products))
-      
       for item in basket:
         self.tran.RecordTransaction(item[0], randint(1,100))
     
@@ -66,5 +65,4 @@ class Test:
 
 if __name__ == "__main__":
   t = Test()
-  t.Product()
-  #t.Transaction()
+  t.Transaction()
